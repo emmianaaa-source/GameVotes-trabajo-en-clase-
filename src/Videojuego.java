@@ -1,4 +1,3 @@
-package com.gamevotes;
 
 import java.util.Objects;
 
