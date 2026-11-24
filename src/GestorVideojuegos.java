@@ -33,26 +33,26 @@ public class GestorVideojuegos {
         catalogo.clear();
 
         Object[][] datosIniciales = {
-                {1290, "Celeste", "Maddy Makes Games", "Plataformas", 2018, 45},
-                {1280, "Hollow Knight", "Team Cherry", "Plataformas", 2017, 60},
-                {1270, "Hades", "Supergiant Games", "Acción", 2020, 52},
-                {1260, "Stardew Valley", "ConcernedApe", "Simulación", 2016, 48},
-                {1250, "Undertale", "tobyfox", "RPG", 2015, 38},
-                {1240, "Into the Breach", "Subset Games", "Estrategia", 2018, 25},
-                {1230, "Dead Cells", "Motion Twin", "Acción", 2018, 33},
-                {1220, "Factorio", "Wube Software", "Simulación", 2020, 41},
-                {1210, "Disco Elysium", "ZA/UM", "RPG", 2019, 55},
-                {1200, "Outer Wilds", "Mobius Digital", "Simulación", 2019, 44},
-                {1190, "Slay the Spire", "Mega Crit", "Estrategia", 2019, 36},
-                {1180, "Cuphead", "Studio MDHR", "Plataformas", 2017, 31},
-                {1170, "Katana ZERO", "Askiisoft", "Acción", 2019, 27},
-                {1160, "Sea of Stars", "Sabotage Studio", "RPG", 2023, 29},
-                {1150, "RimWorld", "Ludeon Studios", "Simulación", 2018, 34},
-                {1140, "Shovel Knight", "Yacht Club Games", "Plataformas", 2014, 22},
-                {1130, "Vampire Survivors", "poncle", "Acción", 2022, 40},
-                {1120, "Against the Storm", "Eremite Games", "Estrategia", 2023, 24},
-                {1110, "Tunic", "Isometricorp Games", "RPG", 2022, 28},
-                {1100, "Dave the Diver", "MINTROCKET", "Simulación", 2023, 35}
+                {1290, "Juego 1", "Estudio 1", "Plataformas", 2018, 45},
+                {1280, "Juego 2", "Estudio 2", "Plataformas", 2017, 60},
+                {1270, "Juego 3", "Estudio 3", "Acción", 2020, 52},
+                {1260, "Juego 4", "Estudio 4", "Simulación", 2016, 48},
+                {1250, "Juego 5", "Estudio 5", "RPG", 2015, 38},
+                {1240, "Juego 6", "Estudio 6", "Estrategia", 2018, 25},
+                {1230, "Juego 7", "Estudio 7", "Acción", 2018, 33},
+                {1220, "Juego 8", "Estudio 8", "Simulación", 2020, 41},
+                {1210, "Juego 9", "Estudio 9", "RPG", 2019, 55},
+                {1200, "Juego 10", "Estudio 10", "Simulación", 2019, 44},
+                {1190, "Juego 11", "Estudio 11", "Estrategia", 2019, 36},
+                {1180, "Juego 12", "Estudio 12", "Plataformas", 2017, 31},
+                {1170, "Juego 13", "Estudio 13", "Acción", 2019, 27},
+                {1160, "Juego 14", "Estudio 14", "RPG", 2023, 29},
+                {1150, "Juego 15", "Estudio 15", "Simulación", 2018, 34},
+                {1140, "Juego 16", "Estudio 16", "Plataformas", 2014, 22},
+                {1130, "Juego 17", "Estudio 17", "Acción", 2022, 40},
+                {1120, "Juego 18", "Estudio 18", "Estrategia", 2023, 24},
+                {1110, "Juego 19", "Estudio 19", "RPG", 2022, 28},
+                {1100, "Juego 20", "Estudio 20", "Simulación", 2023, 35}
         };
 
         for (Object[] fila : datosIniciales) {
