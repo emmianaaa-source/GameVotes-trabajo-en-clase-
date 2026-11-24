@@ -2,6 +2,7 @@ package com.gamevotes;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -11,86 +12,157 @@ public class GestorVideojuegos {
             "Acción", "Estrategia", "RPG", "Plataformas", "Simulación"
     };
 
-    private final ArrayList<Videojuego> catalogo = new ArrayList<>();
+    private final ArrayList<Videojuego> catalogo;
+    private boolean precargaRealizada;
 
     public GestorVideojuegos() {
-        precargar();
+        this.catalogo = new ArrayList<>();
+        this.precargaRealizada = false;
+        precargarVeinteVideojuegos();
     }
 
-    public int getAnioActual() {
+    public int getAnioMaximo() {
         return LocalDate.now().getYear();
     }
 
-    public void precargar() {
-        catalogo.clear();
-        String[] categorias = CATEGORIAS;
-        int anioActual = getAnioActual();
-
-        for (int i = 0; i < 20; i++) {
-            int codigo = 1290 - i * 10;
-            String cat = categorias[i % categorias.length];
-            int anio = ANIO_MINIMO + (i % (anioActual - ANIO_MINIMO + 1));
-            int votos = 10 + (i * 2) % 30;
-            catalogo.add(new Videojuego(
-                    codigo,
-                    "Juego Indie " + (i + 1),
-                    "Estudio " + (i + 1),
-                    cat,
-                    anio,
-                    votos
-            ));
+    public final void precargarVeinteVideojuegos() {
+        if (precargaRealizada) {
+            return;
         }
+        precargaRealizada = true;
+        catalogo.clear();
+
+        Object[][] datosIniciales = {
+                {1290, "Celeste", "Maddy Makes Games", "Plataformas", 2018, 45},
+                {1280, "Hollow Knight", "Team Cherry", "Plataformas", 2017, 60},
+                {1270, "Hades", "Supergiant Games", "Acción", 2020, 52},
+                {1260, "Stardew Valley", "ConcernedApe", "Simulación", 2016, 48},
+                {1250, "Undertale", "tobyfox", "RPG", 2015, 38},
+                {1240, "Into the Breach", "Subset Games", "Estrategia", 2018, 25},
+                {1230, "Dead Cells", "Motion Twin", "Acción", 2018, 33},
+                {1220, "Factorio", "Wube Software", "Simulación", 2020, 41},
+                {1210, "Disco Elysium", "ZA/UM", "RPG", 2019, 55},
+                {1200, "Outer Wilds", "Mobius Digital", "Simulación", 2019, 44},
+                {1190, "Slay the Spire", "Mega Crit", "Estrategia", 2019, 36},
+                {1180, "Cuphead", "Studio MDHR", "Plataformas", 2017, 31},
+                {1170, "Katana ZERO", "Askiisoft", "Acción", 2019, 27},
+                {1160, "Sea of Stars", "Sabotage Studio", "RPG", 2023, 29},
+                {1150, "RimWorld", "Ludeon Studios", "Simulación", 2018, 34},
+                {1140, "Shovel Knight", "Yacht Club Games", "Plataformas", 2014, 22},
+                {1130, "Vampire Survivors", "poncle", "Acción", 2022, 40},
+                {1120, "Against the Storm", "Eremite Games", "Estrategia", 2023, 24},
+                {1110, "Tunic", "Isometricorp Games", "RPG", 2022, 28},
+                {1100, "Dave the Diver", "MINTROCKET", "Simulación", 2023, 35}
+        };
+
+        for (Object[] fila : datosIniciales) {
+            int codigo = (int) fila[0];
+            String nombre = (String) fila[1];
+            String estudio = (String) fila[2];
+            String categoria = (String) fila[3];
+            int anio = (int) fila[4];
+            int votos = (int) fila[5];
+
+            if (esCodigoValido(codigo) && !existeCodigo(codigo)
+                    && esTextoValido(nombre) && esTextoValido(estudio)
+                    && esCategoriaValida(categoria) && esAnioValido(anio)) {
+                catalogo.add(new Videojuego(codigo, nombre, estudio, categoria, anio, votos));
+            }
+        }
+
         ordenarPorCodigoDesc();
     }
 
     // --- Validaciones ---
 
-    public boolean campoVacio(String texto) {
-        return texto == null || texto.trim().isEmpty();
+    public boolean esTextoValido(String valor) {
+        return valor != null && !valor.trim().isEmpty();
     }
 
-    public boolean codigoValido(int codigo) {
+    public boolean esCodigoValido(int codigo) {
         return codigo > 0;
     }
 
-    public boolean anioValido(int anio) {
-        return anio >= ANIO_MINIMO && anio <= getAnioActual();
+    public boolean esAnioValido(int anio) {
+        return anio >= ANIO_MINIMO && anio <= getAnioMaximo();
     }
 
-    public String validarCampos(String codigoStr, String nombre, String estudio, String anioStr, boolean validarCodigo) {
-        if (validarCodigo) {
-            if (campoVacio(codigoStr)) {
-                return "Ingrese un código.";
-            }
-            int codigo;
-            try {
-                codigo = Integer.parseInt(codigoStr.trim());
-            } catch (NumberFormatException e) {
-                return "El código debe ser un número entero.";
-            }
-            if (!codigoValido(codigo)) {
-                return "El código debe ser positivo.";
-            }
-            if (existeCodigo(codigo)) {
-                return "Ese código ya existe.";
+    public boolean esCategoriaValida(String categoria) {
+        if (!esTextoValido(categoria)) {
+            return false;
+        }
+        for (String c : CATEGORIAS) {
+            if (c.equals(categoria.trim())) {
+                return true;
             }
         }
+        return false;
+    }
 
-        if (campoVacio(nombre) || campoVacio(estudio) || campoVacio(anioStr)) {
-            return "Complete todos los campos obligatorios.";
+    public String validarDatosRegistro(String codigoTexto, String nombre, String estudio,
+                                       String categoria, String anioTexto) {
+        if (!esTextoValido(codigoTexto)) {
+            return "El código es obligatorio.";
         }
-
+        int codigo;
+        try {
+            codigo = Integer.parseInt(codigoTexto.trim());
+        } catch (NumberFormatException e) {
+            return "El código debe ser un número entero válido.";
+        }
+        if (!esCodigoValido(codigo)) {
+            return "El código debe ser un número entero positivo mayor que 0.";
+        }
+        if (existeCodigo(codigo)) {
+            return "Ya existe un videojuego registrado con el código " + codigo + ".";
+        }
+        if (!esTextoValido(nombre)) {
+            return "El nombre del videojuego es obligatorio.";
+        }
+        if (!esTextoValido(estudio)) {
+            return "El estudio es obligatorio.";
+        }
+        if (!esCategoriaValida(categoria)) {
+            return "Debe seleccionar una categoría válida.";
+        }
+        if (!esTextoValido(anioTexto)) {
+            return "El año de lanzamiento es obligatorio.";
+        }
         int anio;
         try {
-            anio = Integer.parseInt(anioStr.trim());
+            anio = Integer.parseInt(anioTexto.trim());
         } catch (NumberFormatException e) {
-            return "El año debe ser un número entero.";
+            return "El año de lanzamiento debe ser un número entero válido.";
         }
-        if (!anioValido(anio)) {
-            return "El año debe estar entre " + ANIO_MINIMO + " y " + getAnioActual() + ".";
+        if (!esAnioValido(anio)) {
+            return "El año de lanzamiento debe estar entre " + ANIO_MINIMO + " y " + getAnioMaximo() + ".";
         }
+        return null; // Sin errores
+    }
 
-        return null;
+    public String validarDatosEdicion(String nombre, String estudio, String categoria, String anioTexto) {
+        if (!esTextoValido(nombre)) {
+            return "El nombre del videojuego es obligatorio.";
+        }
+        if (!esTextoValido(estudio)) {
+            return "El estudio es obligatorio.";
+        }
+        if (!esCategoriaValida(categoria)) {
+            return "Debe seleccionar una categoría válida.";
+        }
+        if (!esTextoValido(anioTexto)) {
+            return "El año de lanzamiento es obligatorio.";
+        }
+        int anio;
+        try {
+            anio = Integer.parseInt(anioTexto.trim());
+        } catch (NumberFormatException e) {
+            return "El año de lanzamiento debe ser un número entero válido.";
+        }
+        if (!esAnioValido(anio)) {
+            return "El año de lanzamiento debe estar entre " + ANIO_MINIMO + " y " + getAnioMaximo() + ".";
+        }
+        return null; // Sin errores
     }
 
     // --- Ordenamiento y búsqueda ---
@@ -99,23 +171,31 @@ public class GestorVideojuegos {
         catalogo.sort((a, b) -> Integer.compare(b.getCodigoID(), a.getCodigoID()));
     }
 
-    public int busquedaBinaria(int codigo) {
-        if (!codigoValido(codigo)) {
+    /**
+     * Búsqueda binaria propia sobre catalogo ordenado de mayor a menor por codigoID.
+     * Devuelve el índice en catalogo o -1 si no existe.
+     */
+    public int busquedaBinaria(int codigoBuscado) {
+        if (!esCodigoValido(codigoBuscado)) {
             return -1;
         }
-        int izq = 0;
-        int der = catalogo.size() - 1;
+        ordenarPorCodigoDesc();
 
-        while (izq <= der) {
-            int mid = (izq + der) / 2;
-            int actual = catalogo.get(mid).getCodigoID();
-            if (actual == codigo) {
-                return mid;
-            }
-            if (actual < codigo) {
-                der = mid - 1;
+        int inicio = 0;
+        int fin = catalogo.size() - 1;
+
+        while (inicio <= fin) {
+            int medio = inicio + (fin - inicio) / 2;
+            int codigoMedio = catalogo.get(medio).getCodigoID();
+
+            if (codigoMedio == codigoBuscado) {
+                return medio;
+            } else if (codigoMedio < codigoBuscado) {
+                // Como está ordenado descendente, los códigos mayores están a la izquierda
+                fin = medio - 1;
             } else {
-                izq = mid + 1;
+                // Los códigos menores están a la derecha
+                inicio = medio + 1;
             }
         }
         return -1;
@@ -125,52 +205,73 @@ public class GestorVideojuegos {
         return busquedaBinaria(codigo) != -1;
     }
 
-    // --- Operaciones ---
+    // --- Operaciones CRUD y Ranking ---
 
-    public void agregar(int codigo, String nombre, String estudio, String categoria, int anio) {
-        catalogo.add(new Videojuego(codigo, nombre, estudio, categoria, anio, 0));
+    public boolean registrarVideojuego(int codigo, String nombre, String estudio,
+                                       String categoria, int anio) {
+        if (!esCodigoValido(codigo) || existeCodigo(codigo)
+                || !esTextoValido(nombre) || !esTextoValido(estudio)
+                || !esCategoriaValida(categoria) || !esAnioValido(anio)) {
+            return false;
+        }
+        Videojuego nuevo = new Videojuego(codigo, nombre, estudio, categoria, anio, 0);
+        catalogo.add(nuevo);
         ordenarPorCodigoDesc();
+        return true;
     }
 
-    public Videojuego getJuego(int indice) {
+    public Videojuego obtenerPorIndice(int indice) {
         if (indice < 0 || indice >= catalogo.size()) {
             return null;
         }
         return catalogo.get(indice);
     }
 
-    public void editar(int indice, String nombre, String estudio, String categoria, int anio) {
-        Videojuego j = getJuego(indice);
-        if (j != null) {
-            j.setNombre(nombre);
-            j.setEstudio(estudio);
-            j.setCategoria(categoria);
-            j.setAnioLanzamiento(anio);
-            ordenarPorCodigoDesc();
+    public boolean actualizarVideojuegoPorIndice(int indice, String nombre, String estudio,
+                                                 String categoria, int anio) {
+        if (indice < 0 || indice >= catalogo.size()) {
+            return false;
         }
+        if (!esTextoValido(nombre) || !esTextoValido(estudio)
+                || !esCategoriaValida(categoria) || !esAnioValido(anio)) {
+            return false;
+        }
+        Videojuego juego = catalogo.get(indice);
+        juego.setNombre(nombre);
+        juego.setEstudio(estudio);
+        juego.setCategoria(categoria);
+        juego.setAnioLanzamiento(anio);
+        ordenarPorCodigoDesc();
+        return true;
     }
 
-    public void eliminar(int indice) {
-        if (indice >= 0 && indice < catalogo.size()) {
-            catalogo.remove(indice);
+    public boolean eliminarVideojuegoPorIndice(int indice) {
+        if (indice < 0 || indice >= catalogo.size()) {
+            return false;
         }
+        catalogo.remove(indice);
+        ordenarPorCodigoDesc();
+        return true;
     }
 
-    public void restarVotos(int indice, int cantidad) {
-        Videojuego j = getJuego(indice);
-        if (j != null && cantidad >= 1 && cantidad <= 3) {
-            j.setVotos(Math.max(0, j.getVotos() - cantidad));
+    public boolean restarVotosPorIndice(int indice, int cantidad) {
+        if (indice < 0 || indice >= catalogo.size() || cantidad < 1 || cantidad > 3) {
+            return false;
         }
+        Videojuego juego = catalogo.get(indice);
+        juego.restarVotos(cantidad);
+        return true;
     }
 
     public List<Videojuego> rankingPorVotos() {
-        List<Videojuego> copia = new ArrayList<>(catalogo);
-        copia.sort(Comparator.comparingInt(Videojuego::getVotos).reversed());
-        return copia;
+        ArrayList<Videojuego> copiaRanking = new ArrayList<>(catalogo);
+        copiaRanking.sort(Comparator.comparingInt(Videojuego::getVotos).reversed());
+        return Collections.unmodifiableList(copiaRanking);
     }
 
-    public ArrayList<Videojuego> getCatalogo() {
-        return catalogo;
+    public List<Videojuego> getCatalogo() {
+        ordenarPorCodigoDesc();
+        return Collections.unmodifiableList(catalogo);
     }
 
     public int getCantidad() {
